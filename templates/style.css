@@ -42,3 +42,19 @@ a:hover {
     padding: 2rem;
     border-radius: 5px;
 }
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+    .container {
+        max-width: 90%;
+    }
+
+    .header .container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+}
