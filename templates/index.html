@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TuneFragments - Music Reviews</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <a href="index.html"><h1>TuneFragments</h1></a>
+            <p>자유롭게 오고가는 음악 기록소.</p>
+        </div>
+    </header>
+
+    <div class="container">
+        {{range .}}
+        <div class="content" style="margin-bottom: 1rem;">
+            <a href="{{.Title}}.html"><h2>{{.Title}}</h2></a>
+            <p>By {{.Author}}</p>
+        </div>
+        {{end}}
+    </div>
+</body>
+</html>
