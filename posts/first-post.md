@@ -1,5 +1,5 @@
 author: "김마카"
-title: "사랑하는 앨범들에게 - Joy Division의 Unknown Pleasures "
+title: "사랑하는 앨범들에게 - Joy Division의 Unknown Pleasures"
 ==========
 
 Unknown Pleasures, 이 앨범은 1970년대와 80년대의 중간 사이에서 태어난 한 앨범이다.
