@@ -2,6 +2,7 @@ package main
 
 import (
 	"html/template"
+	"io"
 	"os"
 	"slices"
 	"strings"
@@ -94,10 +95,30 @@ func RenderIndex(posts []Post) {
 	}
 }
 
+func CopyFile(src, dst string) {
+	sourceFile, err := os.Open(src)
+	if err != nil {
+		panic(err)
+	}
+	defer sourceFile.Close()
+
+	destFile, err := os.Create(dst)
+	if err != nil {
+		panic(err)
+	}
+	defer destFile.Close()
+
+	_, err = io.Copy(destFile, sourceFile)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func main() {
 	posts := LoadAllPosts()
 	for _, post := range posts {
 		RenderToHTMLTemplates(post)
 	}
 	RenderIndex(posts)
+	CopyFile("templates/style.css", "dist/style.css")
 }
