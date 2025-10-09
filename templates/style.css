@@ -17,6 +17,12 @@ body {
     text-align: left;
 }
 
+footer {
+    max-width: 65%;
+    margin: 0 auto;
+    text-align: center;
+}
+
 .header .container {
     display: flex;
     justify-content: space-between;
