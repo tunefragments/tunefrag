@@ -16,6 +16,7 @@ import (
 type Post struct {
 	Author  string `yaml:"author"`
 	Title   string `yaml:"title"`
+	Order   int    `yaml:"order"`
 	Content template.HTML
 }
 
@@ -116,6 +117,16 @@ func CopyFile(src, dst string) {
 
 func main() {
 	posts := LoadAllPosts()
+	slices.SortFunc(posts, func(a, b Post) int {
+		if a.Order < b.Order {
+			return -1
+		}
+		if a.Order > b.Order {
+			return 1
+		}
+		return 0
+	})
+
 	for _, post := range posts {
 		RenderToHTMLTemplates(post)
 	}
