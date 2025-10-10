@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
+	"math"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -13,11 +16,23 @@ import (
 	"github.com/gomarkdown/markdown/parser"
 )
 
+const postsPerPage = 10
+
 type Post struct {
 	Author  string `yaml:"author"`
 	Title   string `yaml:"title"`
 	Order   int    `yaml:"order"`
 	Content template.HTML
+}
+
+type Page struct {
+	Posts       []Post
+	CurrentPage int
+	TotalPages  int
+	HasNext     bool
+	HasPrev     bool
+	NextUrl     string
+	PrevUrl     string
 }
 
 func LoadFromMarkdownFile(filename string) Post {
@@ -78,19 +93,25 @@ func LoadAllPosts() []Post {
 	return posts
 }
 
-func RenderIndex(posts []Post) {
-	slices.Reverse(posts)
+func RenderIndex(page Page) {
 	t, err := template.ParseFiles("templates/index.html")
 	if err != nil {
 		panic(err)
 	}
 
-	f, err := os.Create("dist/index.html")
+	var filename string
+	if page.CurrentPage == 1 {
+		filename = "dist/index.html"
+	} else {
+		filename = fmt.Sprintf("dist/page/%d.html", page.CurrentPage)
+	}
+
+	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)
 	}
 
-	err = t.Execute(f, posts)
+	err = t.Execute(f, page)
 	if err != nil {
 		panic(err)
 	}
@@ -115,6 +136,23 @@ func CopyFile(src, dst string) {
 	}
 }
 
+func CopyStaticFiles(sourceDir, destDir string) {
+	os.MkdirAll(destDir, os.ModePerm)
+
+	files, err := os.ReadDir(sourceDir)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, file := range files {
+		if !file.IsDir() && !strings.HasSuffix(file.Name(), ".html") {
+			sourceFile := filepath.Join(sourceDir, file.Name())
+			destFile := filepath.Join(destDir, file.Name())
+			CopyFile(sourceFile, destFile)
+		}
+	}
+}
+
 func main() {
 	posts := LoadAllPosts()
 	slices.SortFunc(posts, func(a, b Post) int {
@@ -126,10 +164,49 @@ func main() {
 		}
 		return 0
 	})
+	slices.Reverse(posts)
 
 	for _, post := range posts {
 		RenderToHTMLTemplates(post)
 	}
-	RenderIndex(posts)
-	CopyFile("templates/style.css", "dist/style.css")
+
+	os.MkdirAll("dist/page", os.ModePerm)
+	totalPages := int(math.Ceil(float64(len(posts)) / float64(postsPerPage)))
+
+	for i := 1; i <= totalPages; i++ {
+		start := (i - 1) * postsPerPage
+		end := start + postsPerPage
+		if end > len(posts) {
+			end = len(posts)
+		}
+
+		pagePosts := posts[start:end]
+
+		prevUrl := ""
+		if i > 1 {
+			if i == 2 {
+				prevUrl = "../index.html"
+			} else {
+				prevUrl = fmt.Sprintf("page/%d.html", i-1)
+			}
+		}
+
+		nextUrl := ""
+		if i < totalPages {
+			nextUrl = fmt.Sprintf("page/%d.html", i+1)
+		}
+
+		page := Page{
+			Posts:       pagePosts,
+			CurrentPage: i,
+			TotalPages:  totalPages,
+			HasPrev:     i > 1,
+			HasNext:     i < totalPages,
+			PrevUrl:     prevUrl,
+			NextUrl:     nextUrl,
+		}
+		RenderIndex(page)
+	}
+
+	CopyStaticFiles("templates", "dist")
 }

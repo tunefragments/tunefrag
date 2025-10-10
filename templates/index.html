@@ -15,16 +15,28 @@
     </header>
 
     <div class="container">
-        {{range .}}
+        {{range .Posts}}
         <div class="content" style="margin-bottom: 1rem;">
             <a href="{{.Title}}.html"><h2>{{.Title}}</h2></a>
             <p>By {{.Author}}</p>
         </div>
         {{end}}
     </div>
+    <br />
+
     <footer>
-                <a rel="me" href="https://planet.moe/@tunefragments">Mastodon</a>
-                <a href="https://github.com/tunefragments/tunefrag/blob/main/CONTRIBUTION.md">기여 가이드</a>
+            <div class="pagination">
+                {{if .HasPrev}}
+                <a href="{{.PrevUrl}}">Previous</a>
+                {{end}}
+                <span>Page {{.CurrentPage}} of {{.TotalPages}}</span>
+                {{if .HasNext}}
+                <a href="{{.NextUrl}}">Next</a>
+                {{end}}
+            </div>
+            <br />
+            <a rel="me" href="https://planet.moe/@tunefragments">Mastodon</a>
+            <a href="https://github.com/tunefragments/tunefrag/blob/main/CONTRIBUTION.md">기여 가이드</a>
     </footer>
 </body>
 </html>
