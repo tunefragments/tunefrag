@@ -14,15 +14,17 @@ import (
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
+	"github.com/gosimple/slug"
 )
 
-const postsPerPage = 10
+const postsPerPage = 4
 
 type Post struct {
 	Author  string `yaml:"author"`
 	Title   string `yaml:"title"`
 	Order   int    `yaml:"order"`
 	Content template.HTML
+	Slug    string
 }
 
 type Page struct {
@@ -51,6 +53,8 @@ func LoadFromMarkdownFile(filename string) Post {
 		panic(err)
 	}
 
+	postinfo.Slug = slug.Make(postinfo.Title)
+
 	p := parser.NewWithExtensions(parser.CommonExtensions)
 	asts := p.Parse([]byte(splited[1]))
 
@@ -66,7 +70,7 @@ func RenderToHTMLTemplates(p Post) {
 		panic(err)
 	}
 
-	f, err := os.Create("dist/" + p.Title + ".html")
+	f, err := os.Create("dist/" + p.Slug + ".html")
 	if err != nil {
 		panic(err)
 	}
@@ -85,7 +89,7 @@ func LoadAllPosts() []Post {
 
 	var posts []Post
 	for _, file := range files {
-		if !file.IsDir() {
+		if !file.IsDir() && strings.HasSuffix(file.Name(), ".md") {
 			posts = append(posts, LoadFromMarkdownFile("posts/"+file.Name()))
 		}
 	}

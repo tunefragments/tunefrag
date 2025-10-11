@@ -17,7 +17,7 @@
     <div class="container">
         {{range .Posts}}
         <div class="content" style="margin-bottom: 1rem;">
-            <a href="{{.Title}}.html"><h2>{{.Title}}</h2></a>
+            <a href="{{.Slug}}.html"><h2>{{.Title}}</h2></a>
             <p>By {{.Author}}</p>
         </div>
         {{end}}
