@@ -197,6 +197,14 @@ func main() {
 
 		pagePosts := posts[start:end]
 
+		for r, pagecontent := range pagePosts {
+			if i == 1 {
+				pagePosts[r].Slug = pagecontent.Slug
+				continue
+			}
+			pagePosts[r].Slug = "../" + pagecontent.Slug
+		}
+
 		prevUrl := ""
 		if i > 1 {
 			if i == 2 {
