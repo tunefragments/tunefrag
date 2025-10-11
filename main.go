@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"io/fs"
 	"math"
 	"os"
 	"path/filepath"
@@ -143,18 +144,28 @@ func CopyFile(src, dst string) {
 func CopyStaticFiles(sourceDir, destDir string) {
 	os.MkdirAll(destDir, os.ModePerm)
 
-	files, err := os.ReadDir(sourceDir)
-	if err != nil {
-		panic(err)
-	}
-
-	for _, file := range files {
-		if !file.IsDir() && !strings.HasSuffix(file.Name(), ".html") {
-			sourceFile := filepath.Join(sourceDir, file.Name())
-			destFile := filepath.Join(destDir, file.Name())
-			CopyFile(sourceFile, destFile)
+	filepath.WalkDir(sourceDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
-	}
+
+		relPath, err := filepath.Rel(sourceDir, path)
+		if err != nil {
+			return err
+		}
+
+		destPath := filepath.Join(destDir, relPath)
+
+		if d.IsDir() {
+			os.MkdirAll(destPath, os.ModePerm)
+		} else {
+			if !strings.HasSuffix(path, ".html") {
+				CopyFile(path, destPath)
+			}
+		}
+
+		return nil
+	})
 }
 
 func main() {
@@ -213,4 +224,5 @@ func main() {
 	}
 
 	CopyStaticFiles("templates", "dist")
+	CopyStaticFiles("posts/statics", "dist/statics")
 }

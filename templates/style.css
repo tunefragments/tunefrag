@@ -49,6 +49,12 @@ a:hover {
     border-radius: 5px;
 }
 
+img {
+        max-width: 100%; /* Ensures the image doesn't exceed its container's width */
+        height: auto;    /* Maintains the aspect ratio */
+        display: block;  /* Removes extra space below the image */
+}
+
 /* Responsive design for mobile */
 @media (max-width: 768px) {
     .container {
