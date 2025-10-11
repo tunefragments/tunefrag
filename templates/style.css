@@ -26,6 +26,7 @@ footer {
 .header .container {
     display: flex;
     justify-content: space-between;
+    padding-bottom: 3px;
     align-items: center;
 }
 
