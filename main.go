@@ -18,7 +18,7 @@ import (
 	"github.com/gosimple/slug"
 )
 
-const postsPerPage = 4
+const postsPerPage = 7
 
 type Post struct {
 	Author  string `yaml:"author"`
